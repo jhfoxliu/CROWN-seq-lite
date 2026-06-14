@@ -8,6 +8,14 @@ To handle this problem, while analyzing CROWN-seq-lite reads, we use a alternati
 
 Check `Mouse/Example/mouse_snRNA_snoRNA.ipynb` for detailed workflow.
 
+## Requirements
+
+* Python3
+* Pysam
+* Bowtie2
+* Cutadapt
+* UMI-tools
+
 ## Workflow
 
 ### 0. Prepare metadata
@@ -26,29 +34,37 @@ Please note that we used a 5' UUA RNA adapter rather than the AUAU adatper in re
 
 `cutadapt -m 32 -U 1 -j 20 -q 20 -e 0.25 -a NAGATCGGAAGAGCACACGTC -A TAAN{11}AGATCGGAAGAGCGTCGTG -o {read1.cutadapt} -p {read2.cutadapt} {read1} {read2}`
 
+### 2. Extract UMI
+
 `umi_tools extract -p NNNNNNNNNNNNNN -I {read1.cutadapt} -S {read1.umi} --read2-in {read2.cutadapt} --read2-out {read2.umi}`
 
-### 2. In silico convert the reads
+### 3. In silico convert the reads
 
-`python fastq_a2g.py {read1.umi} > {read1.A2G}`
+`python fastq_a2g.py -i {read1.umi} > {read1.A2G}`
 
-`python fastq_t2c.py {read2.umi} > {read2.A2G}`
+`python fastq_t2c.py -i {read2.umi} > {read2.A2G}`
 
-### 3. Mapping
+### 4. Mapping
 
-`bowtie2 -x {fasta_A2G_out_index_prefix} -1 {read1.A2G} -2 {read2.A2G} -p {threads} --no-unal --norc --no-mixed --no-discordant -k 20 --end-to-end -S {SAM_out}`
+`bowtie2 -x {fasta_A2G_out_index_prefix} -1 {read1.A2G} -2 {read2.A2G} -p {threads} --no-unal --norc --no-mixed --no-discordant -k 20 --end-to-end | samtools view -bS > {BAM_out}`
 
-### 4. Recover the nucleotides 
 
-`python Bam_recovery_A2G_PE.py -i {BAM_out} -o {BAM_recovered} -o {BAM_out} -f {read1} -r {read2}` 
+### 5. Recover the nucleotides 
+
+`python Bam_recovery_A2G_PE.py -i {BAM_out_dedup} -o {BAM_recovered} -o {BAM_out} -f {read1} -r {read2}` 
 
 `samtools sort -o {BAM_recovered_sorted} {BAM_recovered}`
 
 `samtools index {BAM_recovered_sorted}`
 
-### 5. Generate the conversion rate table
+### 6. Remove duplicates
 
-`python filter_snRNA_mapping_output.py -i {BAM_recovered_sorted} -o {snRNA_snoRNA_m6Am_csv} --db {database} --genelist {genelist}`
+`umi_tools dedup --paired --chimeric-pairs=discard --unpaired-reads=discard --stdin={BAM_recovered_sorted} --log=umi.logs --method=unique > {BAM_out_dedup}`
+
+
+### 7. Generate the conversion rate table
+
+`python filter_snRNA_mapping_output.py -i {BAM_out_dedup} -o {snRNA_snoRNA_m6Am_csv} --db {database} --genelist {genelist}`
 
 ## Contact
 

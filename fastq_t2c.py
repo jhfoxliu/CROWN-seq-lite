@@ -16,15 +16,15 @@ with open(file,'r') as input:
 	i = 0
 	while (line):
 		if i == 0:
-			print line.strip("\n")
+			print(line.strip("\n"))
 			i += 1
 		elif i == 1:
-			print line.strip("\n").replace("T","C")
+			print(line.strip("\n").replace("T","C"))
 			i += 1
 		elif i == 2:
-			print line.strip("\n")
+			print(line.strip("\n"))
 			i +=1
 		elif i == 3:
-			print line.strip("\n")
+			print(line.strip("\n"))
 			i = 0
 		line = input.readline()

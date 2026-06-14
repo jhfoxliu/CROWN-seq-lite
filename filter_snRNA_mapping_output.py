@@ -8,8 +8,8 @@ if __name__ == "__main__":
     group_required = parser.add_argument_group("Required")
     group_required.add_argument("-i",dest="BAM",required=True,help="Input BAM")
     group_required.add_argument("-o",dest="output",required=True,help="Output CSV")
-    group_required.add_argument("--db",dest="database",required=False, default="",help="")
-    group_required.add_argument("--genelist",dest="genelist",required=False, default="",help="")
+    group_required.add_argument("--db",dest="database",required=False,help="snRNA/snoRNA database")
+    group_required.add_argument("--genelist",dest="genelist",required=False,help="gene names")
     options = parser.parse_args()
 
     # enst_to_name = {}
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     with pysam.AlignmentFile(options.BAM, "rb") as BAM:
         for read in BAM:
             if read.is_read1 and read.reference_start == 0:
-                if "S" not in read.cigarstring and "I" not in read.cigarstring and "D" not in read.cigarstring and len(read.query_sequence) >= 35 and read.is_primary == True:
+                if "S" not in read.cigarstring and "I" not in read.cigarstring and "D" not in read.cigarstring and len(read.query_sequence) >= 35 and read.is_secondary == False:
                     if read.get_tag("AS") >= -5:
                         UMI = read.query_name.split("_")[-1]
                         if read.reference_name in ref_to_snRNA:
