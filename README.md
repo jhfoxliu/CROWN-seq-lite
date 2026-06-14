@@ -6,6 +6,8 @@ It is very difficult in mapping CROWN-seq reads to snRNA and snoRNA. It is becau
 
 To handle this problem, while analyzing CROWN-seq-lite reads, we use a alternative strategy: we first map the reads to transriptome, which contain all possible snRNA and snoRNA sequences. We then keep the reads mapping to isoforms of the **same** type of snRNA/snoRNA, assigning them to one type of snRNA or snoRNA. Notably, we manually generated a transcript id to snRNA/snoRNA type database to perform this mapping.
 
+Check `Mouse/Example/mouse_snRNA_snoRNA.ipynb` for detailed workflow.
+
 ## Workflow
 
 ### 0. Prepare metadata
@@ -18,13 +20,19 @@ To handle this problem, while analyzing CROWN-seq-lite reads, we use a alternati
 
 `bowtie2-build {fasta_A2G_out} {fasta_A2G_out_index_prefix}`
 
-### 1. Run regular read QC according to the standard GLORI/CROWN-seq mapping pipeline [https://github.com/jhfoxliu/CROWN-Seq].
+### 1. QC
+
+Please note that we used a 5' UUA RNA adapter rather than the AUAU adatper in regular CROWN-seq workflow.
+
+`cutadapt -m 32 -U 1 -j 20 -q 20 -e 0.25 -a NAGATCGGAAGAGCACACGTC -A TAAN{11}AGATCGGAAGAGCGTCGTG -o {read1.cutadapt} -p {read2.cutadapt} {read1} {read2}`
+
+`umi_tools extract -p NNNNNNNNNNNNNN -I {read1.cutadapt} -S {read1.umi} --read2-in {read2.cutadapt} --read2-out {read2.umi}`
 
 ### 2. In silico convert the reads
 
-`python fastq_a2g.py {read1} > {read1.A2G}`
+`python fastq_a2g.py {read1.umi} > {read1.A2G}`
 
-`python fastq_t2c.py {read2} > {read2.A2G}`
+`python fastq_t2c.py {read2.umi} > {read2.A2G}`
 
 ### 3. Mapping
 
