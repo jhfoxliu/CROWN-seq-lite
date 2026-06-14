@@ -8,7 +8,7 @@ To handle this problem, while analyzing CROWN-seq-lite reads, we use a alternati
 
 ## Workflow
 
-0. Prepare metadata
+### 0. Prepare metadata
 
 (1) Download the `.genelist` and `.database.txt` files.
 
@@ -18,19 +18,19 @@ To handle this problem, while analyzing CROWN-seq-lite reads, we use a alternati
 
 `bowtie2-build {fasta_A2G_out} {fasta_A2G_out_index_prefix}`
 
-1. Run regular read QC according to the standard GLORI/CROWN-seq mapping pipeline [https://github.com/jhfoxliu/CROWN-Seq].
+### 1. Run regular read QC according to the standard GLORI/CROWN-seq mapping pipeline [https://github.com/jhfoxliu/CROWN-Seq].
 
-2. In silico convert the reads
+### 2. In silico convert the reads
 
 `python fastq_a2g.py {read1} > {read1.A2G}`
 
 `python fastq_t2c.py {read2} > {read2.A2G}`
 
-3. Mapping
+### 3. Mapping
 
 `bowtie2 -x {fasta_A2G_out_index_prefix} -1 {read1.A2G} -2 {read2.A2G} -p {threads} --no-unal --norc --no-mixed --no-discordant -k 20 --end-to-end -S {SAM_out}`
 
-4. Recover the nucleotides 
+### 4. Recover the nucleotides 
 
 `python Bam_recovery_A2G_PE.py -i {BAM_out} -o {BAM_recovered} -o {BAM_out} -f {read1} -r {read2}` 
 
@@ -38,7 +38,7 @@ To handle this problem, while analyzing CROWN-seq-lite reads, we use a alternati
 
 `samtools index {BAM_recovered_sorted}`
 
-5. Generate the conversion rate table
+### 5. Generate the conversion rate table
 
 `python filter_snRNA_mapping_output.py -i {BAM_recovered_sorted} -o {snRNA_snoRNA_m6Am_csv} --db {database} --genelist {genelist}`
 
