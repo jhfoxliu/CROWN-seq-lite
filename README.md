@@ -2,7 +2,7 @@
 
 ## Background
 
-It is very difficult in mapping CROWN-seq reads to snRNA and snoRNA. It is because there are many copies of snRNA and snoRNA in the genome. Many of the copies are identical, or only differ to each other of a few nucleotides. In CROWN-seq, it is more challenging, because, A nucleotides are converted into G nucleotides. As a result, if the standard CROWN-seq mapping pipeline [!https://github.com/jhfoxliu/CROWN-Seq] was applied, those reads mapped to the snRNA and snoRNAs were removed in the final alignment results due to multiple alignment.
+It is very difficult in mapping CROWN-seq reads to snRNA and snoRNA. It is because there are many copies of snRNA and snoRNA in the genome. Many of the copies are identical, or only differ to each other of a few nucleotides. In CROWN-seq, it is more challenging, because, A nucleotides are converted into G nucleotides. As a result, if the standard CROWN-seq mapping pipeline [https://github.com/jhfoxliu/CROWN-Seq] was applied, those reads mapped to the snRNA and snoRNAs were removed in the final alignment results due to multiple alignment.
 
 To handle this problem, while analyzing CROWN-seq-lite reads, we use a alternative strategy: we first map the reads to transriptome, which contain all possible snRNA and snoRNA sequences. We then keep the reads mapping to isoforms of the **same** type of snRNA/snoRNA, assigning them to one type of snRNA or snoRNA. Notably, we manually generated a transcript id to snRNA/snoRNA type database to perform this mapping.
 
@@ -18,7 +18,7 @@ To handle this problem, while analyzing CROWN-seq-lite reads, we use a alternati
 
 `bowtie2-build {fasta_A2G_out} {fasta_A2G_out_index_prefix}`
 
-1. Run regular read QC according to the standard GLORI/CROWN-seq mapping pipeline [!https://github.com/jhfoxliu/CROWN-Seq].
+1. Run regular read QC according to the standard GLORI/CROWN-seq mapping pipeline [https://github.com/jhfoxliu/CROWN-Seq].
 
 2. In silico convert the reads
 
@@ -46,7 +46,7 @@ To handle this problem, while analyzing CROWN-seq-lite reads, we use a alternati
 
 Please email Jianheng Liu (Fox) if you have any question:
 
-[!jil4026@med.cornell.edu] or [!jhfoxliu@gmail.com]
+[jil4026@med.cornell.edu] or [jhfoxliu@gmail.com]
 
 ## License
 
